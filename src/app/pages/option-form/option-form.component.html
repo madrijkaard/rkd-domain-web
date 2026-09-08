@@ -1,0 +1,26 @@
+<section class="form-layout">
+  <a class="back-link" [routerLink]="['/domains', domainId, 'attributes', attributeId, 'edit']">← Back to attribute</a>
+  <div class="page-heading"><div><p class="eyebrow">Option list</p><h1>{{ editing ? 'Edit option' : 'Add option' }}</h1><p class="subtitle">Define the values available for this OPTION attribute.</p></div></div>
+  @if (error) { <div class="alert">{{ error }}</div> }
+  @if (loading) { <div class="card loading">Loading option...</div> }
+  @else {
+    <form class="card form-card" [formGroup]="form" (ngSubmit)="save()">
+      <div class="form-grid">
+        <div class="field"><label for="code">Code</label><input id="code" formControlName="code" placeholder="e.g. NOTIFICATION_TYPE" /><small class="error" *ngIf="form.controls.code.touched && form.controls.code.invalid">Code is required.</small></div>
+        <div class="field"><label for="description">Description</label><input id="description" formControlName="description" placeholder="Describe this option list" /><small class="error" *ngIf="form.controls.description.touched && form.controls.description.invalid">Description is required.</small></div>
+      </div>
+
+      <div class="option-values-heading"><div><h2>Values</h2><p>Each option needs a value and a display label.</p></div><button class="btn btn-secondary" type="button" (click)="addValue()">＋ Add value</button></div>
+      <div class="option-values" formArrayName="values">
+        @for (value of optionValues.controls; track $index) {
+          <div class="option-value-row" [formGroupName]="$index">
+            <div class="field"><label [for]="'value-' + $index">Value</label><input [id]="'value-' + $index" formControlName="value" placeholder="e.g. 1" /></div>
+            <div class="field"><label [for]="'label-' + $index">Label</label><input [id]="'label-' + $index" formControlName="label" placeholder="e.g. Yes" /></div>
+            <button class="icon-btn" type="button" [disabled]="optionValues.length <= 2" (click)="removeValue($index)" title="Remove value">×</button>
+          </div>
+        }
+      </div>
+      <div class="form-footer"><a class="btn btn-secondary" [routerLink]="['/domains', domainId, 'attributes', attributeId, 'edit']">Cancel</a><button class="btn btn-primary" type="submit" [disabled]="saving">{{ saving ? 'Saving...' : 'Save option' }}</button></div>
+    </form>
+  }
+</section>

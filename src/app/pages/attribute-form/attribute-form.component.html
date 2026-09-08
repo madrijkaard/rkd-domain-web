@@ -1,0 +1,28 @@
+<section class="form-layout">
+  <a class="back-link" [routerLink]="['/domains', domainId, 'edit']">← Back to domain</a>
+  <div class="page-heading"><div><p class="eyebrow">{{ domain?.code || 'Domain' }}</p><h1>{{ editing ? 'Edit attribute' : 'Add attribute' }}</h1><p class="subtitle">Configure a field for this domain.</p></div></div>
+  @if (error) { <div class="alert">{{ error }}</div> }
+  @if (loading) { <div class="card loading">Loading attribute...</div> }
+  @else {
+    <form class="card form-card" [formGroup]="form" (ngSubmit)="save()">
+      <div class="form-grid">
+        <div class="field"><label for="code">Code</label><input id="code" formControlName="code" placeholder="e.g. FIRST_NAME" /><small class="error" *ngIf="form.controls.code.touched && form.controls.code.invalid">Code is required.</small></div>
+        <div class="field"><label for="description">Description</label><input id="description" formControlName="description" placeholder="Describe the attribute" /><small class="error" *ngIf="form.controls.description.touched && form.controls.description.invalid">Description is required.</small></div>
+        <div class="field"><label for="type">Type</label><select id="type" formControlName="type">@for (type of types; track type) { <option [value]="type">{{ type }}</option> }</select></div>
+        <label class="field check-field"><span><input type="checkbox" formControlName="mandatory" /> Required attribute</span></label>
+      </div>
+      @if (selectedType === 'OPTION') {
+        <div class="option-panel">
+          <div><h2>Option list</h2><p>Manage the code, description and values for this option.</p></div>
+          @if (currentOption; as option) {
+            <div class="option-summary"><div><strong>{{ option.code }}</strong><span>{{ option.description }}</span><small>{{ option.values?.options?.length ?? 0 }} values</small></div><div class="option-actions"><button class="btn btn-secondary" type="button" (click)="editOption()">✎ Edit option</button><button class="btn btn-danger" type="button" [disabled]="deletingOption" (click)="removeOption()">{{ deletingOption ? 'Deleting...' : '🗑 Delete option' }}</button></div></div>
+          } @else {
+            <p class="notice">Save the attribute before adding its option list.</p>
+            <button class="btn btn-secondary" type="button" [disabled]="!canManageOption" (click)="addOption()">＋ Add option</button>
+          }
+        </div>
+      }
+      <div class="form-footer"><a class="btn btn-secondary" [routerLink]="['/domains', domainId, 'edit']">Cancel</a><button class="btn btn-primary" type="submit" [disabled]="saving">{{ saving ? 'Saving...' : 'Save attribute' }}</button></div>
+    </form>
+  }
+</section>

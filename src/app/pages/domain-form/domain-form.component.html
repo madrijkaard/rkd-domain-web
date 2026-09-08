@@ -1,0 +1,36 @@
+<section class="form-layout">
+  <a class="back-link" routerLink="/domains">← Back to domains</a>
+  <div class="page-heading"><div><p class="eyebrow">{{ editing ? 'Domain settings' : 'New definition' }}</p><h1>{{ editing ? 'Edit domain' : 'Create domain' }}</h1><p class="subtitle">{{ editing ? 'Update the identity of this domain and manage its attributes.' : 'Start with the essential information. Attributes can be added after saving.' }}</p></div></div>
+
+  @if (error) { <div class="alert">{{ error }}</div> }
+  @if (loading) { <div class="card loading">Loading domain...</div> }
+  @else {
+    <form class="card form-card" [formGroup]="form" (ngSubmit)="save()">
+      <div class="form-grid">
+        <div class="field"><label for="code">Code</label><input id="code" formControlName="code" placeholder="e.g. CUSTOMER" /><small class="error" *ngIf="form.controls.code.touched && form.controls.code.invalid">Code is required.</small></div>
+        <div class="field"><label for="description">Description</label><input id="description" formControlName="description" placeholder="Describe this domain" /><small class="error" *ngIf="form.controls.description.touched && form.controls.description.invalid">Description is required.</small></div>
+      </div>
+      <div class="related-section">
+        <div class="related-section-heading"><div><h2>Related domains</h2><p>Select the domains that should be linked to this domain.</p></div><button class="expand-btn" type="button" [attr.aria-expanded]="showRelatedDomains" (click)="toggleRelatedDomains()" [title]="showRelatedDomains ? 'Collapse related domains' : 'Expand related domains'">{{ showRelatedDomains ? '−' : '+' }}</button></div>
+        @if (showRelatedDomains) {
+          <div class="related-domains">
+            <div class="card related-panel"><div class="related-panel-heading"><div><h3>Available domains</h3><span>{{ availableDomains.length }} available</span></div></div>
+              @if (availableDomains.length === 0) { <p class="related-empty">No other domains are available.</p> }
+              @else { <div class="related-list">@for (related of availableDomains; track related.id) { <div class="related-row"><div><strong>{{ related.code }}</strong><span>{{ related.description }}</span></div><button class="icon-btn" type="button" (click)="relate(related)" title="Add relation">＋</button></div> }</div> }
+            </div>
+            <div class="card related-panel"><div class="related-panel-heading"><div><h3>Linked domains</h3><span>{{ relatedDomains.length }} linked</span></div></div>
+              @if (relatedDomains.length === 0) { <p class="related-empty">No related domains selected.</p> }
+              @else { <div class="related-list">@for (related of relatedDomains; track related.id) { <div class="related-row"><div><strong>{{ related.code }}</strong><span>{{ related.description }}</span></div><button class="icon-btn" type="button" (click)="unrelate(related)" title="Remove relation">×</button></div> }</div> }
+            </div>
+          </div>
+        }
+      </div>
+      <div class="form-footer"><a class="btn btn-secondary" routerLink="/domains">Cancel</a><button class="btn btn-primary" type="submit" [disabled]="saving">{{ saving ? 'Saving...' : editing ? 'Save changes' : 'Save domain' }}</button></div>
+    </form>
+
+    <div class="section-heading"><div><h2>Attributes</h2><p>{{ editing ? 'Define the fields available in this domain.' : 'Save the domain before adding attributes.' }}</p></div><a class="btn btn-secondary" [class.disabled]="!domainId" [routerLink]="domainId ? ['/domains', domainId, 'attributes', 'new'] : null" [attr.aria-disabled]="!domainId">＋ Add attribute</a></div>
+    @if (!domainId) { <div class="notice">ⓘ Attributes become available as soon as this domain is saved.</div> }
+    @else if (attributes.length === 0) { <div class="card empty"><div class="empty-icon">⌁</div><h3>No attributes yet</h3><p>Add the first configurable attribute to this domain.</p></div> }
+    @else { <div class="attribute-list">@for (attribute of attributes; track attribute.id) { <div class="card attribute-item"><div class="attribute-main"><strong>{{ attribute.code }}</strong><span>{{ attribute.description }}</span></div><div class="attribute-tags"><span class="tag">{{ attribute.type }}</span>@if (attribute.mandatory) { <span class="tag">Required</span> }<a class="icon-btn" [routerLink]="['/domains', domainId, 'attributes', attribute.id, 'edit']" title="Edit attribute">✎</a><button class="icon-btn danger-icon" type="button" [disabled]="deletingAttributeId === attribute.id" (click)="removeAttribute(attribute)" title="Delete attribute">🗑</button></div></div> }</div> }
+  }
+</section>

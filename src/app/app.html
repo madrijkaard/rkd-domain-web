@@ -1,0 +1,12 @@
+<div class="app-shell">
+  <header class="topbar">
+    <a class="brand" routerLink="/domains">
+      <span class="brand-mark">R</span>
+      <span><strong>RKD</strong><small>Domain Core</small></span>
+    </a>
+    <button class="theme-toggle" type="button" (click)="toggleTheme()" [attr.aria-label]="darkMode ? 'Switch to light mode' : 'Switch to dark mode'" [title]="darkMode ? 'Switch to light mode' : 'Switch to dark mode'">
+      <span aria-hidden="true">{{ darkMode ? '☀' : '☾' }}</span>
+    </button>
+  </header>
+  <main class="page-container"><router-outlet /></main>
+</div>
