@@ -1,0 +1,23 @@
+<section>
+  <div class="page-heading">
+    <div><a class="back-link" routerLink="/domains">← Back to domains</a><p class="eyebrow">Relationship map</p><h1>Domain relationships</h1><p class="subtitle">Explore how the configured domains are connected.</p></div>
+  </div>
+  @if (error) { <div class="alert" role="alert">{{ error }}</div> }
+  @if (loading) { <div class="card loading">Loading relationships...</div> }
+  @else if (domains.length === 0) { <div class="card empty"><h2>No domains yet</h2><p>Create domains to see their relationships here.</p></div> }
+  @else {
+    <div class="relationship-toolbar"><span>{{ domains.length }} domains</span><span>{{ edges.length }} relationships</span></div>
+    <div #viewport class="relationship-viewport" role="application" aria-label="Diagram showing relationships between domains. Drag the background to navigate and drag a domain to reposition it." [style.--grid-size.px]="20 * zoom" (pointerdown)="startPan($event, viewport)" (pointermove)="movePointer($event, viewport)" (pointerup)="endPointer()" (pointercancel)="endPointer()" (pointerleave)="endPointer()">
+      <div class="relationship-controls" (pointerdown)="$event.stopPropagation()">
+        <button class="diagram-control" type="button" aria-label="Zoom out" [disabled]="zoom <= 0.6" (click)="zoomOut()">−</button>
+        <span>{{ zoom * 100 | number:'1.0-0' }}%</span>
+        <button class="diagram-control" type="button" aria-label="Zoom in" [disabled]="zoom >= 2" (click)="zoomIn()">+</button>
+        <button class="btn btn-secondary reorganize-btn" type="button" (click)="reorganize()">Reorganizar</button>
+      </div>
+      <svg class="relationship-diagram" [attr.viewBox]="'0 0 ' + canvasWidth + ' ' + canvasHeight" [attr.width]="canvasWidth * zoom" [attr.height]="canvasHeight * zoom">
+        @for (edge of edges; track $index) { <line class="relationship-line" [attr.x1]="edge.from.x + 110" [attr.y1]="edge.from.y + 41" [attr.x2]="edge.to.x + 110" [attr.y2]="edge.to.y + 41" /> }
+        @for (node of nodes; track node.domain.id) { <g class="domain-node" [attr.transform]="'translate(' + node.x + ' ' + node.y + ')'" (pointerdown)="startNodeDrag($event, node)"><rect width="220" height="82" rx="12" /><text class="domain-node-code" x="110" y="39" text-anchor="middle">{{ node.domain.code }}</text><text class="domain-node-description" x="110" y="59" text-anchor="middle">{{ node.domain.description }}</text></g> }
+      </svg>
+    </div>
+  }
+</section>
