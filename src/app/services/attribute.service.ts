@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Attribute } from '../models/domain';
 
-type AttributePayload = Omit<Attribute, 'id' | 'option'> & { optionId?: number | null };
+type AttributePayload = Omit<Attribute, 'id' | 'option'>;
 
 @Injectable({ providedIn: 'root' })
 export class AttributeService {

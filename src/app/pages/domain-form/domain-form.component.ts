@@ -4,6 +4,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DomainService } from '../../services/domain.service';
 import { AttributeService } from '../../services/attribute.service';
+import { OptionService } from '../../services/option.service';
 import { Attribute, Domain, DomainSummary } from '../../models/domain';
 
 @Component({ selector: 'app-domain-form', standalone: true, imports: [CommonModule, ReactiveFormsModule, RouterLink], templateUrl: './domain-form.component.html' })
@@ -13,6 +14,7 @@ export class DomainFormComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly service = inject(DomainService);
   private readonly attributeService = inject(AttributeService);
+  private readonly optionService = inject(OptionService);
   readonly form = this.fb.nonNullable.group({ code: ['', Validators.required], description: ['', Validators.required] });
   domain?: Domain;
   allDomains: DomainSummary[] = [];
@@ -54,10 +56,18 @@ export class DomainFormComponent implements OnInit {
     if (!attribute.id || !window.confirm(`Delete attribute "${attribute.code}"?`)) return;
     this.deletingAttributeId = attribute.id;
     this.error = '';
-    this.attributeService.remove(attribute.id).subscribe({
+    const removeAttribute = () => this.attributeService.remove(attribute.id!).subscribe({
       next: () => { if (this.domain) this.domain.attributes = this.domain.attributes?.filter((item) => item.id !== attribute.id); this.deletingAttributeId = undefined; },
       error: (error) => { this.error = this.apiMessage(error, 'Unable to delete the attribute.'); this.deletingAttributeId = undefined; },
     });
+    if (attribute.type === 'OPTION' && attribute.option?.id) {
+      this.optionService.remove(attribute.option.id).subscribe({
+        next: removeAttribute,
+        error: (error) => { this.error = this.apiMessage(error, 'Unable to delete the option before removing the attribute.'); this.deletingAttributeId = undefined; },
+      });
+      return;
+    }
+    removeAttribute();
   }
 
   private apiMessage(error: unknown, fallback: string): string {

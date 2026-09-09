@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Option } from '../models/domain';
 
-export type OptionPayload = Pick<Option, 'code' | 'description' | 'values'> & { status?: boolean };
+export type OptionPayload = Pick<Option, 'code' | 'description' | 'values'> & { attributeId: number; status?: boolean };
 
 @Injectable({ providedIn: 'root' })
 export class OptionService {

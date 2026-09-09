@@ -10,12 +10,11 @@
         <div class="field"><label for="description">Description</label><input id="description" formControlName="description" placeholder="Describe this option list" /><small class="error" *ngIf="form.controls.description.touched && form.controls.description.invalid">Description is required.</small></div>
       </div>
 
-      <div class="option-values-heading"><div><h2>Values</h2><p>Each option needs a value and a display label.</p></div><button class="btn btn-secondary" type="button" (click)="addValue()">＋ Add value</button></div>
+      <div class="option-values-heading"><div><h2>Options</h2><p>Each item can be plain text or any valid JSON structure.</p></div><button class="btn btn-secondary" type="button" (click)="addValue()">＋ Add item</button></div>
       <div class="option-values" formArrayName="values">
         @for (value of optionValues.controls; track $index) {
           <div class="option-value-row" [formGroupName]="$index">
-            <div class="field"><label [for]="'value-' + $index">Value</label><input [id]="'value-' + $index" formControlName="value" placeholder="e.g. 1" /></div>
-            <div class="field"><label [for]="'label-' + $index">Label</label><input [id]="'label-' + $index" formControlName="label" placeholder="e.g. Yes" /></div>
+            <div class="field option-item-field"><label [for]="'value-' + $index">Option item</label><textarea [id]="'value-' + $index" formControlName="value" rows="3" placeholder="Text or JSON object"></textarea></div>
             <button class="icon-btn" type="button" [disabled]="optionValues.length <= 2" (click)="removeValue($index)" title="Remove value">×</button>
           </div>
         }

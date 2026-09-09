@@ -15,7 +15,7 @@
         <div class="option-panel">
           <div><h2>Option list</h2><p>Manage the code, description and values for this option.</p></div>
           @if (currentOption; as option) {
-            <div class="option-summary"><div><strong>{{ option.code }}</strong><span>{{ option.description }}</span><small>{{ option.values?.options?.length ?? 0 }} values</small></div><div class="option-actions"><button class="btn btn-secondary" type="button" (click)="editOption()">✎ Edit option</button><button class="btn btn-danger" type="button" [disabled]="deletingOption" (click)="removeOption()">{{ deletingOption ? 'Deleting...' : '🗑 Delete option' }}</button></div></div>
+            <div class="option-summary"><div class="option-code-preview"><strong>{{ option.code }}</strong><div class="option-json-tooltip" role="tooltip"><pre>{{ formatOptionJson(option) }}</pre></div><span>{{ option.description }}</span><small>{{ option.values?.options?.length ?? 0 }} values</small></div><div class="option-actions"><button class="btn btn-secondary" type="button" (click)="editOption()">✎ Edit option</button><button class="btn btn-danger" type="button" [disabled]="deletingOption" (click)="removeOption()">{{ deletingOption ? 'Deleting...' : '🗑 Delete option' }}</button></div></div>
           } @else {
             <p class="notice">Save the attribute before adding its option list.</p>
             <button class="btn btn-secondary" type="button" [disabled]="!canManageOption" (click)="addOption()">＋ Add option</button>

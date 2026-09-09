@@ -16,7 +16,7 @@ export class AttributeFormComponent implements OnInit {
   private readonly service = inject(AttributeService);
   private readonly optionService = inject(OptionService);
   readonly types = ATTRIBUTE_TYPES;
-  readonly form = this.fb.nonNullable.group({ code: ['', Validators.required], description: ['', Validators.required], type: ['TEXT' as AttributeType, Validators.required], mandatory: [false], optionId: [null as number | null] });
+  readonly form = this.fb.nonNullable.group({ code: ['', Validators.required], description: ['', Validators.required], type: ['TEXT' as AttributeType, Validators.required], mandatory: [false] });
   domainId!: number;
   attributeId?: number;
   domain?: Domain;
@@ -29,6 +29,7 @@ export class AttributeFormComponent implements OnInit {
   get selectedType(): AttributeType { return this.form.controls.type.value; }
   get canManageOption(): boolean { return this.editing && this.selectedType === 'OPTION' && !!this.attributeId; }
   get currentOption(): Option | undefined { return this.domain?.attributes?.find((item) => item.id === this.attributeId)?.option; }
+  formatOptionJson(option: Option): string { return JSON.stringify(option, null, 2); }
 
   ngOnInit(): void {
     this.domainId = Number(this.route.snapshot.paramMap.get('domainId'));
@@ -38,12 +39,12 @@ export class AttributeFormComponent implements OnInit {
     this.domains.find(this.domainId).subscribe({ next: (domain) => { this.domain = domain; const attribute = domain.attributes?.find((item) => item.id === this.attributeId); if (this.editing && !attribute) { this.error = 'Attribute not found.'; } else if (attribute) { this.patch(attribute); } this.loading = false; }, error: () => { this.error = 'Unable to load the domain.'; this.loading = false; } });
   }
 
-  private patch(attribute: Attribute): void { this.form.patchValue({ code: attribute.code, description: attribute.description, type: attribute.type, mandatory: attribute.mandatory, optionId: attribute.option?.id ?? null }); }
+  private patch(attribute: Attribute): void { this.form.patchValue({ code: attribute.code, description: attribute.description, type: attribute.type, mandatory: attribute.mandatory }); }
   save(): void {
     if (this.form.invalid) { this.form.markAllAsTouched(); return; }
     this.saving = true;
     const value = this.form.getRawValue();
-    const payload = { ...value, domainId: this.domainId, status: true, optionId: value.type === 'OPTION' ? value.optionId : null };
+    const payload = { ...value, domainId: this.domainId, status: true };
     const request = this.editing ? this.service.update(this.attributeId!, payload) : this.service.create(payload);
     request.subscribe({ next: (attribute) => { this.saving = false; if (!this.editing) { this.attributeId = attribute.id; this.editing = true; this.router.navigate(['/domains', this.domainId, 'attributes', attribute.id, 'edit']); } else { this.router.navigate(['/domains', this.domainId, 'edit']); } }, error: () => { this.error = 'Unable to save the attribute.'; this.saving = false; } });
   }
