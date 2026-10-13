@@ -3,6 +3,7 @@ export interface Domain {
   code: string;
   description: string;
   status?: boolean;
+  projectId?: number;
   attributes?: Attribute[];
   relatedDomains?: DomainSummary[];
   createdAt?: string;

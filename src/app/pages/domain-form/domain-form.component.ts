@@ -21,6 +21,7 @@ export class DomainFormComponent implements OnInit {
   relatedDomains: DomainSummary[] = [];
   showRelatedDomains = false;
   domainId?: number;
+  projectId?: number;
   saving = false;
   deletingAttributeId?: number;
   loading = false;
@@ -35,6 +36,8 @@ export class DomainFormComponent implements OnInit {
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
+    const projectId = this.route.snapshot.paramMap.get('projectId');
+    this.projectId = projectId ? Number(projectId) : undefined;
     this.loadDomains();
     if (id) { this.domainId = Number(id); this.loadDomain(); }
   }
@@ -80,7 +83,7 @@ export class DomainFormComponent implements OnInit {
     this.saving = true;
     this.error = '';
     const values = this.form.getRawValue();
-    const payload = { ...values, relatedDomainIds: this.relatedDomains.map((domain) => domain.id), status: this.domain?.status ?? true };
+    const payload = { ...values, relatedDomainIds: this.relatedDomains.map((domain) => domain.id), projectId: this.projectId ?? this.domain?.projectId, status: this.domain?.status ?? true };
     const request = this.editing ? this.service.update(this.domainId!, payload) : this.service.create(payload);
     request.subscribe({ next: (domain) => { this.domain = domain; this.domainId = domain.id; this.relatedDomains = domain.relatedDomains ?? this.relatedDomains; this.saving = false; if (!this.editing) { this.router.navigate(['/domains', domain.id, 'edit']); } }, error: () => { this.error = 'Unable to save the domain.'; this.saving = false; } });
   }

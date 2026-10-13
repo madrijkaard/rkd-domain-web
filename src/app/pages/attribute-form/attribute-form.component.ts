@@ -46,7 +46,7 @@ export class AttributeFormComponent implements OnInit {
     const value = this.form.getRawValue();
     const payload = { ...value, domainId: this.domainId, status: true };
     const request = this.editing ? this.service.update(this.attributeId!, payload) : this.service.create(payload);
-    request.subscribe({ next: (attribute) => { this.saving = false; if (!this.editing) { this.attributeId = attribute.id; this.editing = true; this.router.navigate(['/domains', this.domainId, 'attributes', attribute.id, 'edit']); } else { this.router.navigate(['/domains', this.domainId, 'edit']); } }, error: () => { this.error = 'Unable to save the attribute.'; this.saving = false; } });
+    request.subscribe({ next: () => { this.saving = false; this.router.navigate(['/domains', this.domainId, 'attributes']); }, error: () => { this.error = 'Unable to save the attribute.'; this.saving = false; } });
   }
 
   addOption(): void { if (this.canManageOption && !this.currentOption) this.router.navigate(['/domains', this.domainId, 'attributes', this.attributeId, 'option', 'new']); }

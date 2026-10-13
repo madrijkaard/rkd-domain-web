@@ -9,7 +9,7 @@ export type DomainPayload = Pick<Domain, 'code' | 'description'> & { relatedDoma
 export class DomainService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = 'http://localhost:8080';
-  list(status?: boolean): Observable<Domain[]> { return this.http.get<Domain[]>(`${this.apiUrl}/domain${status === undefined ? '' : `?status=${status}`}`); }
+  list(status?: boolean, projectId?: number): Observable<Domain[]> { const params = new URLSearchParams(); if (status !== undefined) params.set('status', String(status)); if (projectId !== undefined) params.set('projectId', String(projectId)); const query = params.toString(); return this.http.get<Domain[]>(`${this.apiUrl}/domain${query ? `?${query}` : ''}`); }
   find(id: number): Observable<Domain> { return this.http.get<Domain>(`${this.apiUrl}/domain/${id}`); }
   create(domain: DomainPayload): Observable<Domain> { return this.http.post<Domain>(`${this.apiUrl}/domain`, domain); }
   update(id: number, domain: DomainPayload): Observable<Domain> { return this.http.put<Domain>(`${this.apiUrl}/domain/${id}`, domain); }

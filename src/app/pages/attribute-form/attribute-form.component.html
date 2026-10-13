@@ -1,5 +1,5 @@
 <section class="form-layout">
-  <a class="back-link" [routerLink]="['/domains', domainId, 'edit']">← Back to domain</a>
+  <a class="back-link" [routerLink]="['/domains', domainId, 'attributes']">← Back to attributes</a>
   <div class="page-heading"><div><p class="eyebrow">{{ domain?.code || 'Domain' }}</p><h1>{{ editing ? 'Edit attribute' : 'Add attribute' }}</h1><p class="subtitle">Configure a field for this domain.</p></div></div>
   @if (error) { <div class="alert">{{ error }}</div> }
   @if (loading) { <div class="card loading">Loading attribute...</div> }
@@ -22,7 +22,7 @@
           }
         </div>
       }
-      <div class="form-footer"><a class="btn btn-secondary" [routerLink]="['/domains', domainId, 'edit']">Cancel</a><button class="btn btn-primary" type="submit" [disabled]="saving">{{ saving ? 'Saving...' : 'Save attribute' }}</button></div>
+      <div class="form-footer"><a class="btn btn-secondary" [routerLink]="['/domains', domainId, 'attributes']">Cancel</a><button class="btn btn-primary" type="submit" [disabled]="saving">{{ saving ? 'Saving...' : 'Save attribute' }}</button></div>
     </form>
   }
 </section>
